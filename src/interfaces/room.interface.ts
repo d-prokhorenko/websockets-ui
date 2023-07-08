@@ -1,13 +1,13 @@
-import { MessageType } from '../enum/message-type.enum.js';
+import { MessageTypeEnum } from '../enum/message-type.enum.js';
 
 export interface CreateNewRoomMessage {
-  type: MessageType.CREATE_ROOM;
+  type: MessageTypeEnum.CREATE_ROOM;
   data: string;
   id: number;
 }
 
 export interface AddUserToRoomMessage {
-  type: MessageType.ADD_USER_TO_ROOM;
+  type: MessageTypeEnum.ADD_USER_TO_ROOM;
   data: AddUserToRoomMessageDataMessage;
   id: number;
 }
@@ -17,7 +17,7 @@ export interface AddUserToRoomMessageDataMessage {
 }
 
 export interface CreateGameSend {
-  type: MessageType.CREATE_GAME;
+  type: MessageTypeEnum.CREATE_GAME;
   data: CreateGameDataSend;
   id: number;
 }
@@ -28,7 +28,7 @@ export interface CreateGameDataSend {
 }
 
 export interface UpdateRoomStateSend {
-  type: MessageType.UPDATE_ROOM;
+  type: MessageTypeEnum.UPDATE_ROOM;
   data: UpdateRoomStateDataSend[];
   id: number;
 }

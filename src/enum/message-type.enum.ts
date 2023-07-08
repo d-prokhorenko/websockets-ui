@@ -1,4 +1,4 @@
-export enum MessageType {
+export enum MessageTypeEnum {
   REG = 'reg',
   UPDATE_WINNERS = 'update_winners',
   CREATE_ROOM = 'create_room',

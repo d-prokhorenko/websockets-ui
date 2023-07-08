@@ -1,7 +1,11 @@
-import { MessageType } from '../enum/message-type.enum.js';
+import { MessageTypeEnum } from '../enum/message-type.enum.js';
 
+export interface Player {
+  name: string;
+  password: string;
+}
 export interface PlayerLoginMessage {
-  type: MessageType.REG;
+  type: MessageTypeEnum.REG;
   data: PlayerDataMessage;
   id: number;
 }
@@ -12,20 +16,19 @@ export interface PlayerDataMessage {
 }
 
 export interface PlayerLoginSend {
-  type: MessageType.REG;
+  type: MessageTypeEnum.REG;
   data: PlayerDataSend;
   id: number;
 }
 
 export interface PlayerDataSend {
   name: string;
-  index: number;
   error: boolean;
   errorText: string;
 }
 
 export interface UpdateWinnersSend {
-  type: MessageType.UPDATE_WINNERS;
+  type: MessageTypeEnum.UPDATE_WINNERS;
   data: UpdateWinnersDataSend[];
   id: number;
 }

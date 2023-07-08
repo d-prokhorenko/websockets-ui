@@ -1,9 +1,9 @@
-import { MessageType } from '../enum/message-type.enum.js';
+import { MessageTypeEnum } from '../enum/message-type.enum.js';
 import { ShipType } from '../enum/ship-type.enum.js';
 import { Position } from './common.interface.js';
 
 export interface AddShipMessage {
-  type: MessageType.ADD_SHIPS;
+  type: MessageTypeEnum.ADD_SHIPS;
   data: AddShipMessageData;
   id: number;
 }
@@ -22,7 +22,7 @@ export interface Ship {
 }
 
 export interface StartGameSend {
-  type: MessageType.START_GAME;
+  type: MessageTypeEnum.START_GAME;
   data: StartGameDataSend;
   id: number;
 }

@@ -1,9 +1,9 @@
 import { AttackStatus } from '../enum/attack-status.enum.js';
-import { MessageType } from '../enum/message-type.enum.js';
+import { MessageTypeEnum } from '../enum/message-type.enum.js';
 import { Position } from './common.interface.js';
 
 export interface AttackMessage {
-  type: MessageType.ATTACK;
+  type: MessageTypeEnum.ATTACK;
   data: AttackMessageData;
   id: number;
 }
@@ -16,7 +16,7 @@ export interface AttackMessageData {
 }
 
 export interface AttackSend {
-  type: MessageType.ATTACK;
+  type: MessageTypeEnum.ATTACK;
   data: AttackSendData;
   id: number;
 }
@@ -28,7 +28,7 @@ export interface AttackSendData {
 }
 
 export interface RandomAttackMessage {
-  type: MessageType.RANDOM_ATTACK;
+  type: MessageTypeEnum.RANDOM_ATTACK;
   data: RandomAttackMessageData;
   id: number;
 }
@@ -39,7 +39,7 @@ export interface RandomAttackMessageData {
 }
 
 export interface TurnSend {
-  type: MessageType.TURN;
+  type: MessageTypeEnum.TURN;
   data: TurnSendData;
   id: number;
 }
@@ -49,7 +49,7 @@ export interface TurnSendData {
 }
 
 export interface FinishSend {
-  type: MessageType.FINISH;
+  type: MessageTypeEnum.FINISH;
   data: FinishSendData;
   id: number;
 }

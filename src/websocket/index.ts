@@ -12,11 +12,12 @@ const clients = new Set();
 
 wss.on('connection', (ws: WebSocket) => {
   console.log('Client connected');
+
   clients.add(ws);
 
   ws.on('message', (message: string) => {
     const request: MessageType = JSON.parse(message);
-    handleWSRequest(request);
+    handleWSRequest(ws, request);
   });
 
   ws.on('close', () => {
