@@ -1,20 +1,26 @@
 import WebSocket, { WebSocketServer } from 'ws';
+import { handleWSRequest } from './handleWSRequest.js';
+import { MessageType } from '../types/message-type.type.js';
 
 const WEB_SOCKET_PORT = 3000;
 
-export const wss = new WebSocketServer({
+const wss = new WebSocketServer({
   port: WEB_SOCKET_PORT,
 });
 
+const clients = new Set();
+
 wss.on('connection', (ws: WebSocket) => {
   console.log('Client connected');
+  clients.add(ws);
 
   ws.on('message', (message: string) => {
-    const request = JSON.parse(message);
-    console.log(request);
+    const request: MessageType = JSON.parse(message);
+    handleWSRequest(request);
   });
 
   ws.on('close', () => {
     console.log('Client disconnected');
+    clients.delete(ws);
   });
 });
