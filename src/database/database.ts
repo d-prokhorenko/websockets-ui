@@ -1,5 +1,5 @@
 import { MessageTypeEnum } from '../enum/message-type.enum.js';
-import { Player, PlayerDataMessage, PlayerLoginSend } from '../interfaces/player.interface.js';
+import { Player, PlayerDataMessage } from '../interfaces/player.interface.js';
 import { MessageSendType } from '../types/message-type.type.js';
 
 export const players = new Map<string, Player>();
