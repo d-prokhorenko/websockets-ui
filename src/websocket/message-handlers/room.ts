@@ -1,5 +1,5 @@
 import { WebSocket } from 'ws';
-import { createGame, createRoom, games, players, rooms } from '../../database/database.js';
+import { createGame, createRoom, players, rooms } from '../../database/database.js';
 import { MessageTypeEnum } from '../../enum/message-type.enum.js';
 import { MessageSendType } from '../../types/message-type.type.js';
 import { AddUserToRoomMessageDataMessage, RoomUser } from '../../interfaces/room.interface.js';

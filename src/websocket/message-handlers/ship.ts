@@ -1,4 +1,4 @@
-import { games, rooms } from '../../database/database.js';
+import { games } from '../../database/database.js';
 import { MessageTypeEnum } from '../../enum/message-type.enum.js';
 import { AddShipMessageData, GameData } from '../../interfaces/ships.interface.js';
 
