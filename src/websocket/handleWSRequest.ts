@@ -7,6 +7,8 @@ import { getUpdateRoomResponse, handleAddUserToRoom, handleCreateRoom } from './
 import { AddUserToRoomMessageDataMessage } from '../interfaces/room.interface.js';
 import { handleAddShips } from './message-handlers/ship.js';
 import { AddShipMessageData } from '../interfaces/ships.interface.js';
+import { handleAttack } from './message-handlers/game.js';
+import { AttackMessageData } from '../interfaces/game.interface.js';
 
 function sendUpdateRoomMessage(ws: WebSocket): void {
   ws.send(JSON.stringify(getUpdateRoomResponse()));
@@ -39,6 +41,11 @@ export function handleWSRequest(ws: WebSocket, request: MessageType): void {
 
     case MessageTypeEnum.ADD_SHIPS:
       handleAddShips(data as AddShipMessageData);
+
+      break;
+
+    case MessageTypeEnum.ATTACK:
+      handleAttack(data as AttackMessageData);
 
       break;
 

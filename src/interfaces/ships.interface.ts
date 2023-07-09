@@ -43,4 +43,10 @@ export interface StartGameDataSendShips {
 export interface GameData {
   ws: WebSocket;
   ships: Ship[] | null;
+  attackPositions: AttackPosition[];
+}
+
+export interface AttackPosition {
+  x: number;
+  y: number;
 }
