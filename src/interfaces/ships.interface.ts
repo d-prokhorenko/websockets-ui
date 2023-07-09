@@ -1,3 +1,4 @@
+import { WebSocket } from 'ws';
 import { MessageTypeEnum } from '../enum/message-type.enum.js';
 import { ShipType } from '../enum/ship-type.enum.js';
 import { Position } from './common.interface.js';
@@ -37,4 +38,9 @@ export interface StartGameDataSendShips {
   direction: boolean;
   length: number;
   type: ShipType;
+}
+
+export interface GameData {
+  ws: WebSocket;
+  ships: Ship[] | null;
 }

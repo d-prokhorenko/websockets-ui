@@ -1,11 +1,13 @@
 import { MessageTypeEnum } from '../enum/message-type.enum.js';
 import { Player, PlayerDataMessage } from '../interfaces/player.interface.js';
 import { MessageSendType } from '../types/message-type.type.js';
-import { UpdateRoomStateDataSend } from '../interfaces/room.interface.js';
+import { RoomUser, UpdateRoomStateDataSend } from '../interfaces/room.interface.js';
 import { WebSocket } from 'ws';
+import { GameData } from '../interfaces/ships.interface.js';
 
 export const players = new Map<WebSocket, Player>();
 export const rooms = new Map<number, UpdateRoomStateDataSend>();
+export const games = new Map<number, GameData[]>();
 
 export function registrationPlayer(ws: WebSocket, data: PlayerDataMessage): MessageSendType {
   const response = {
@@ -73,4 +75,21 @@ export function createRoom(ws: WebSocket): void {
     roomId,
     roomUsers,
   });
+}
+
+export function createGame(gameId: number, roomUsers: RoomUser[] | undefined): void {
+  const [user1, user2] = roomUsers || [];
+
+  const gameData = [
+    {
+      ws: user1?.ws,
+      ships: null,
+    },
+    {
+      ws: user2?.ws,
+      ships: null,
+    },
+  ];
+
+  games.set(gameId, gameData);
 }
