@@ -1,10 +1,13 @@
 import { MessageTypeEnum } from '../enum/message-type.enum.js';
 import { Player, PlayerDataMessage } from '../interfaces/player.interface.js';
 import { MessageSendType } from '../types/message-type.type.js';
+import { UpdateRoomStateDataSend } from '../interfaces/room.interface.js';
+import { WebSocket } from 'ws';
 
-export const players = new Map<string, Player>();
+export const players = new Map<WebSocket, Player>();
+export const rooms = new Map<number, UpdateRoomStateDataSend>();
 
-export function registrationPlayer(data: PlayerDataMessage): MessageSendType {
+export function registrationPlayer(ws: WebSocket, data: PlayerDataMessage): MessageSendType {
   const response = {
     type: MessageTypeEnum.REG,
     data: JSON.stringify({
@@ -15,8 +18,8 @@ export function registrationPlayer(data: PlayerDataMessage): MessageSendType {
     id: 0,
   };
 
-  if (!players.has(data.name)) {
-    players.set(data.name, data);
+  if (!players.has(ws)) {
+    players.set(ws, data);
 
     return response;
   } else {
@@ -31,7 +34,7 @@ export function registrationPlayer(data: PlayerDataMessage): MessageSendType {
   }
 }
 
-export function loginPlayer(data: PlayerDataMessage): MessageSendType {
+export function loginPlayer(ws: WebSocket, data: PlayerDataMessage): MessageSendType {
   const response = {
     type: MessageTypeEnum.REG,
     data: JSON.stringify({
@@ -42,7 +45,7 @@ export function loginPlayer(data: PlayerDataMessage): MessageSendType {
     id: 0,
   };
 
-  if (players.has(data.name)) {
+  if (players.has(ws)) {
     return response;
   } else {
     return {
@@ -54,4 +57,20 @@ export function loginPlayer(data: PlayerDataMessage): MessageSendType {
       }),
     };
   }
+}
+
+export function createRoom(ws: WebSocket): void {
+  const roomId = rooms.size;
+  const roomUsers = [
+    {
+      ws,
+      name: players.get(ws)?.name || '',
+      index: 0,
+    },
+  ];
+
+  rooms.set(roomId, {
+    roomId,
+    roomUsers,
+  });
 }

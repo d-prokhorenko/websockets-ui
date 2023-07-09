@@ -1,3 +1,4 @@
+import { WebSocket } from 'ws';
 import { MessageTypeEnum } from '../enum/message-type.enum.js';
 
 export interface CreateNewRoomMessage {
@@ -35,10 +36,11 @@ export interface UpdateRoomStateSend {
 
 export interface UpdateRoomStateDataSend {
   roomId: number;
-  roomUsers: RoomUsers[];
+  roomUsers: RoomUser[];
 }
 
-export interface RoomUsers {
+export interface RoomUser {
   name: string;
   index: number;
+  ws: WebSocket;
 }

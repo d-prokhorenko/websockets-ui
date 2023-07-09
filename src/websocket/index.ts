@@ -8,7 +8,7 @@ const wss = new WebSocketServer({
   port: WEB_SOCKET_PORT,
 });
 
-const clients = new Set();
+export const clients = new Set<WebSocket>();
 
 wss.on('connection', (ws: WebSocket) => {
   console.log('Client connected');
