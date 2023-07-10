@@ -66,13 +66,51 @@ export function handleAttack({ x, y, gameId, indexPlayer }: AttackMessageData): 
 
           if (isKilled) {
             const killedShoots: AttackPosition[] = [];
+            let missedShoots: AttackPosition[] = [];
 
             for (let i = 0; i < length; i++) {
               killedShoots.push({
                 x: direction ? position.x : position.x + i,
                 y: direction ? position.y + i : position.y,
               });
+              missedShoots.push({
+                x: direction ? position.x - 1 : position.x + i,
+                y: direction ? position.y + i : position.y - 1,
+              });
+              missedShoots.push({
+                x: direction ? position.x + 1 : position.x + i,
+                y: direction ? position.y + i : position.y + 1,
+              });
+              if (i === length - 1) {
+                missedShoots.push({
+                  x: direction ? position.x - 1 : position.x - 1,
+                  y: direction ? position.y - 1 : position.y - 1,
+                });
+                missedShoots.push({
+                  x: direction ? position.x : position.x - 1,
+                  y: direction ? position.y - 1 : position.y,
+                });
+                missedShoots.push({
+                  x: direction ? position.x + 1 : position.x - 1,
+                  y: direction ? position.y - 1 : position.y + 1,
+                });
+                missedShoots.push({
+                  x: direction ? position.x - 1 : position.x + length,
+                  y: direction ? position.y + length : position.y - 1,
+                });
+                missedShoots.push({
+                  x: direction ? position.x : position.x + length,
+                  y: direction ? position.y + length : position.y,
+                });
+                missedShoots.push({
+                  x: direction ? position.x + 1 : position.x + length,
+                  y: direction ? position.y + length : position.y + 1,
+                });
+              }
             }
+
+            missedShoots = missedShoots.filter(({ x, y }) => x >= 0 && y <= 9 && y >= 0 && x <= 9);
+            console.log('missedShoots', missedShoots);
 
             for (let i = 0; i < killedShoots.length; i++) {
               game.forEach(({ ws }: GameData) => {
@@ -86,6 +124,25 @@ export function handleAttack({ x, y, gameId, indexPlayer }: AttackMessageData): 
                       },
                       currentPlayer: indexPlayer,
                       status: AttackStatus.KILLED,
+                    }),
+                    id: 0,
+                  }),
+                );
+              });
+            }
+
+            for (let i = 0; i < missedShoots.length; i++) {
+              game.forEach(({ ws }: GameData) => {
+                ws.send(
+                  JSON.stringify({
+                    type: MessageTypeEnum.ATTACK,
+                    data: JSON.stringify({
+                      position: {
+                        x: missedShoots[i].x,
+                        y: missedShoots[i].y,
+                      },
+                      currentPlayer: indexPlayer,
+                      status: AttackStatus.MISS,
                     }),
                     id: 0,
                   }),
