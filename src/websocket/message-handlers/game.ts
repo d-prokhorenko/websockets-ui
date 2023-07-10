@@ -1,4 +1,4 @@
-import { games, getPlayer, players, winners } from '../../database/database.js';
+import { games, getPlayer, winners } from '../../database/database.js';
 import { AttackStatus } from '../../enum/attack-status.enum.js';
 import { MessageTypeEnum } from '../../enum/message-type.enum.js';
 import { AttackMessageData, RandomAttackMessageData } from '../../interfaces/game.interface.js';
@@ -20,11 +20,12 @@ export function sendTurnMessage(gameId: number, playerIndex: number): void {
 }
 
 export function handleAttack({ x, y, gameId, indexPlayer }: AttackMessageData): void {
+  // TODO refactor this bullshit)
   const game = games.get(gameId);
 
   if (game) {
     let response: string;
-    let isShoot = false;
+    let isShot = false;
 
     const enemyShips = game[indexPlayer === 0 ? 1 : 0].ships;
     const attackPositions = game[indexPlayer].attackPositions;
@@ -45,9 +46,9 @@ export function handleAttack({ x, y, gameId, indexPlayer }: AttackMessageData): 
           end: direction ? position.y + length - 1 : position.y,
         };
 
-        isShoot = x >= xPositions.start && x <= xPositions.end && y >= yPositions.start && y <= yPositions.end;
+        isShot = x >= xPositions.start && x <= xPositions.end && y >= yPositions.start && y <= yPositions.end;
 
-        if (isShoot) {
+        if (isShot) {
           const shipXPositions = direction ? [xPositions.start] : [];
           const shipYPositions = direction ? [] : [yPositions.start];
 
@@ -76,62 +77,62 @@ export function handleAttack({ x, y, gameId, indexPlayer }: AttackMessageData): 
             shipYPositions.every((yPosition: number) => attackYPositions.includes(yPosition));
 
           if (isKilled) {
-            const killedShoots: AttackPosition[] = [];
-            let missedShoots: AttackPosition[] = [];
+            const killedShots: AttackPosition[] = [];
+            let missedShots: AttackPosition[] = [];
             game[indexPlayer].killedShips += 1;
 
             for (let i = 0; i < length; i++) {
-              killedShoots.push({
+              killedShots.push({
                 x: direction ? position.x : position.x + i,
                 y: direction ? position.y + i : position.y,
               });
-              missedShoots.push({
+              missedShots.push({
                 x: direction ? position.x - 1 : position.x + i,
                 y: direction ? position.y + i : position.y - 1,
               });
-              missedShoots.push({
+              missedShots.push({
                 x: direction ? position.x + 1 : position.x + i,
                 y: direction ? position.y + i : position.y + 1,
               });
               if (i === length - 1) {
-                missedShoots.push({
+                missedShots.push({
                   x: direction ? position.x - 1 : position.x - 1,
                   y: direction ? position.y - 1 : position.y - 1,
                 });
-                missedShoots.push({
+                missedShots.push({
                   x: direction ? position.x : position.x - 1,
                   y: direction ? position.y - 1 : position.y,
                 });
-                missedShoots.push({
+                missedShots.push({
                   x: direction ? position.x + 1 : position.x - 1,
                   y: direction ? position.y - 1 : position.y + 1,
                 });
-                missedShoots.push({
+                missedShots.push({
                   x: direction ? position.x - 1 : position.x + length,
                   y: direction ? position.y + length : position.y - 1,
                 });
-                missedShoots.push({
+                missedShots.push({
                   x: direction ? position.x : position.x + length,
                   y: direction ? position.y + length : position.y,
                 });
-                missedShoots.push({
+                missedShots.push({
                   x: direction ? position.x + 1 : position.x + length,
                   y: direction ? position.y + length : position.y + 1,
                 });
               }
             }
 
-            missedShoots = missedShoots.filter(({ x, y }) => x >= 0 && y <= 9 && y >= 0 && x <= 9);
+            missedShots = missedShots.filter(({ x, y }) => x >= 0 && y <= 9 && y >= 0 && x <= 9);
 
-            for (let i = 0; i < killedShoots.length; i++) {
+            for (let i = 0; i < killedShots.length; i++) {
               game.forEach(({ ws }: GameData) => {
                 ws.send(
                   JSON.stringify({
                     type: MessageTypeEnum.ATTACK,
                     data: JSON.stringify({
                       position: {
-                        x: killedShoots[i].x,
-                        y: killedShoots[i].y,
+                        x: killedShots[i].x,
+                        y: killedShots[i].y,
                       },
                       currentPlayer: indexPlayer,
                       status: AttackStatus.KILLED,
@@ -142,15 +143,15 @@ export function handleAttack({ x, y, gameId, indexPlayer }: AttackMessageData): 
               });
             }
 
-            for (let i = 0; i < missedShoots.length; i++) {
+            for (let i = 0; i < missedShots.length; i++) {
               game.forEach(({ ws }: GameData) => {
                 ws.send(
                   JSON.stringify({
                     type: MessageTypeEnum.ATTACK,
                     data: JSON.stringify({
                       position: {
-                        x: missedShoots[i].x,
-                        y: missedShoots[i].y,
+                        x: missedShots[i].x,
+                        y: missedShots[i].y,
                       },
                       currentPlayer: indexPlayer,
                       status: AttackStatus.MISS,
@@ -221,7 +222,7 @@ export function handleAttack({ x, y, gameId, indexPlayer }: AttackMessageData): 
 
       game.forEach(({ ws }: GameData) => {
         ws.send(response);
-        sendTurnMessage(gameId, indexPlayer === 0 && !isShoot ? 1 : 0);
+        sendTurnMessage(gameId, indexPlayer === 0 && !isShot ? 1 : 0);
       });
     }
   }
@@ -230,6 +231,7 @@ export function handleAttack({ x, y, gameId, indexPlayer }: AttackMessageData): 
 export function handleRandomAttack({ gameId, indexPlayer }: RandomAttackMessageData): void {
   const game = games.get(gameId);
   if (game) {
+    // TODO check attack positions before random attack
     const attackPositions = game[indexPlayer].attackPositions;
     const x = Math.floor(Math.random() * 10);
     const y = Math.floor(Math.random() * 10);

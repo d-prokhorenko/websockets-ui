@@ -12,19 +12,20 @@ export const games = new Map<number, GameData[]>();
 export const winners = new Map<WebSocket, WinnersData>();
 
 export function registrationPlayer(ws: WebSocket, data: PlayerDataMessage): MessageSendType {
-  const response = {
-    type: MessageTypeEnum.REG,
-    data: JSON.stringify({
-      name: data.name,
-      error: false,
-      errorText: '',
-    }),
-    id: 0,
-  };
-
   const isPlayerExist = [...(players.values() || [])].some(({ name }) => name === data.name);
 
   if (!isPlayerExist) {
+    const response = {
+      type: MessageTypeEnum.REG,
+      data: JSON.stringify({
+        name: data.name,
+        error: false,
+        errorText: '',
+      }),
+      id: 0,
+    };
+
+    // TODO check if player with randomUUID doesn't exist
     players.set(randomUUID(), {
       ...data,
       ws,
@@ -32,33 +33,36 @@ export function registrationPlayer(ws: WebSocket, data: PlayerDataMessage): Mess
 
     return response;
   } else {
-    return loginPlayer(data);
+    return loginPlayer(ws, data);
   }
 }
 
-export function loginPlayer(data: PlayerDataMessage): MessageSendType {
-  const response = {
-    type: MessageTypeEnum.REG,
-    data: JSON.stringify({
-      name: data.name,
-      error: false,
-      errorText: '',
-    }),
-    id: 0,
-  };
-
+export function loginPlayer(ws: WebSocket, data: PlayerDataMessage): MessageSendType {
   const player = [...(players.values() || [])].find(({ name }) => name === data.name);
 
   if (player?.password === data.password) {
-    return response;
-  } else {
     return {
-      ...response,
+      type: MessageTypeEnum.REG,
+      data: JSON.stringify({
+        name: data.name,
+        error: false,
+        errorText: '',
+      }),
+      id: 0,
+    };
+  } else {
+    if (player) {
+      player.ws = ws;
+    }
+
+    return {
+      type: MessageTypeEnum.REG,
       data: JSON.stringify({
         name: data.name,
         error: true,
         errorText: 'Wrong auth data',
       }),
+      id: 0,
     };
   }
 }
@@ -66,6 +70,7 @@ export function loginPlayer(data: PlayerDataMessage): MessageSendType {
 export function createRoom(ws: WebSocket): void {
   const roomId = rooms.size;
   const player = getPlayer(ws);
+
   const roomUsers = [
     {
       ws,
@@ -82,6 +87,7 @@ export function createRoom(ws: WebSocket): void {
 
 export function createGame(roomUsers: RoomUser[] | undefined): number {
   const [user1, user2] = roomUsers || [];
+  // TODO check if game with ID doesn't exist
   const gameId = Math.floor(Math.random() * 1000);
 
   const gameData = [
