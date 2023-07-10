@@ -85,11 +85,13 @@ export function createGame(gameId: number, roomUsers: RoomUser[] | undefined): v
       ws: user1?.ws,
       ships: null,
       attackPositions: [],
+      killedShips: 0,
     },
     {
       ws: user2?.ws,
       ships: null,
       attackPositions: [],
+      killedShips: 0,
     },
   ];
 

@@ -44,6 +44,7 @@ export interface GameData {
   ws: WebSocket;
   ships: Ship[] | null;
   attackPositions: AttackPosition[];
+  killedShips: number;
 }
 
 export interface AttackPosition {

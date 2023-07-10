@@ -77,6 +77,8 @@ export function handleAttack({ x, y, gameId, indexPlayer }: AttackMessageData): 
           if (isKilled) {
             const killedShoots: AttackPosition[] = [];
             let missedShoots: AttackPosition[] = [];
+            game[indexPlayer].killedShips += 1;
+            console.log('isKilled', isKilled);
 
             for (let i = 0; i < length; i++) {
               killedShoots.push({
@@ -159,6 +161,20 @@ export function handleAttack({ x, y, gameId, indexPlayer }: AttackMessageData): 
               });
             }
 
+            game.forEach(({ ws }: GameData) => {
+              if (game[indexPlayer].killedShips >= 10) {
+                ws.send(
+                  JSON.stringify({
+                    type: MessageTypeEnum.FINISH,
+                    data: JSON.stringify({
+                      winPlayer: indexPlayer,
+                    }),
+                    id: 0,
+                  }),
+                );
+              }
+            });
+
             return;
           } else {
             response = JSON.stringify({
@@ -194,6 +210,7 @@ export function handleAttack({ x, y, gameId, indexPlayer }: AttackMessageData): 
 
       game.forEach(({ ws }: GameData) => {
         ws.send(response);
+        console.log(game[indexPlayer].killedShips);
         sendTurnMessage(gameId, indexPlayer === 0 && !isShoot ? 1 : 0);
       });
     }
