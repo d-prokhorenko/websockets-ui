@@ -84,8 +84,6 @@ export function createGame(roomUsers: RoomUser[] | undefined): number {
   const [user1, user2] = roomUsers || [];
   const gameId = Math.floor(Math.random() * 1000);
 
-  console.log(gameId);
-
   const gameData = [
     {
       ws: user1?.ws,

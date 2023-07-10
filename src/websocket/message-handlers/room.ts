@@ -50,8 +50,6 @@ function createGameForRoomUsers(roomId: number) {
 
   const idGame = createGame(roomUsers);
 
-  console.log(roomUsers);
-
   roomUsers?.forEach(({ ws }: RoomUser, index: number) => {
     ws.send(
       JSON.stringify({
