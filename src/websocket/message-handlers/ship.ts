@@ -31,3 +31,7 @@ export function handleAddShips(data: AddShipMessageData): void {
 function areShipsAddedForAllPlayers(game: GameData[]): boolean {
   return game.every(({ ships }) => Boolean(ships));
 }
+
+export function handleSinglePlay(): void {
+  // handleAddShips();
+}

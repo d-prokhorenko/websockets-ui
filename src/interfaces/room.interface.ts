@@ -17,6 +17,12 @@ export interface AddUserToRoomMessageDataMessage {
   indexRoom: number;
 }
 
+export interface SinglePlayMessage {
+  type: MessageTypeEnum.SINGLE_PLAY;
+  data: string;
+  id: number;
+}
+
 export interface CreateGameSend {
   type: MessageTypeEnum.CREATE_GAME;
   data: CreateGameDataSend;

@@ -5,7 +5,7 @@ import { handleREG, updateWinners } from './message-handlers/reg.js';
 import { PlayerDataMessage } from '../interfaces/player.interface.js';
 import { getUpdateRoomResponse, handleAddUserToRoom, handleCreateRoom } from './message-handlers/room.js';
 import { AddUserToRoomMessageDataMessage } from '../interfaces/room.interface.js';
-import { handleAddShips } from './message-handlers/ship.js';
+import { handleAddShips, handleSinglePlay } from './message-handlers/ship.js';
 import { AddShipMessageData } from '../interfaces/ships.interface.js';
 import { handleAttack, handleRandomAttack } from './message-handlers/game.js';
 import { AttackMessageData, RandomAttackMessageData } from '../interfaces/game.interface.js';
@@ -50,6 +50,10 @@ export function handleWSRequest(ws: WebSocket, request: MessageType): void {
 
     case MessageTypeEnum.RANDOM_ATTACK:
       handleRandomAttack(data as RandomAttackMessageData);
+      break;
+
+    case MessageTypeEnum.SINGLE_PLAY:
+      handleSinglePlay();
       break;
 
     default:

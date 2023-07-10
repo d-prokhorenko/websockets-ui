@@ -10,6 +10,7 @@ import {
   AddUserToRoomMessage,
   AddUserToRoomMessageDataMessage,
   CreateNewRoomMessage,
+  SinglePlayMessage,
 } from '../interfaces/room.interface.js';
 import { AddShipMessage, AddShipMessageData } from '../interfaces/ships.interface.js';
 
@@ -17,6 +18,7 @@ export type MessageType =
   | PlayerLoginMessage
   | CreateNewRoomMessage
   | AddUserToRoomMessage
+  | SinglePlayMessage
   | AddShipMessage
   | AttackMessage
   | RandomAttackMessage;
