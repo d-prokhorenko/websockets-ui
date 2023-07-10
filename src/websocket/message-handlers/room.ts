@@ -47,14 +47,16 @@ function updateRoomForAllClients(): void {
 function createGameForRoomUsers(roomId: number) {
   const roomUsers = rooms.get(roomId)?.roomUsers;
 
-  createGame(roomId, roomUsers);
+  const idGame = createGame(roomUsers);
+
+  console.log(roomUsers);
 
   roomUsers?.forEach(({ ws }: RoomUser, index: number) => {
     ws.send(
       JSON.stringify({
         type: MessageTypeEnum.CREATE_GAME,
         data: JSON.stringify({
-          idGame: roomId,
+          idGame,
           idPlayer: index,
         }),
         id: 0,

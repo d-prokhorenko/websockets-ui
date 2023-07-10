@@ -78,8 +78,11 @@ export function createRoom(ws: WebSocket): void {
   });
 }
 
-export function createGame(gameId: number, roomUsers: RoomUser[] | undefined): void {
+export function createGame(roomUsers: RoomUser[] | undefined): number {
   const [user1, user2] = roomUsers || [];
+  const gameId = Math.floor(Math.random() * 1000);
+
+  console.log(gameId);
 
   const gameData = [
     {
@@ -97,4 +100,6 @@ export function createGame(gameId: number, roomUsers: RoomUser[] | undefined): v
   ];
 
   games.set(gameId, gameData);
+
+  return gameId;
 }
