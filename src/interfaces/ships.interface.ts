@@ -45,6 +45,7 @@ export interface GameData {
   ships: Ship[] | null;
   attackPositions: AttackPosition[];
   killedShips: number;
+  turn: boolean;
 }
 
 export interface AttackPosition {

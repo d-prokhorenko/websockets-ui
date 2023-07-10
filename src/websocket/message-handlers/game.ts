@@ -24,6 +24,10 @@ export function handleAttack({ x, y, gameId, indexPlayer }: AttackMessageData): 
   const game = games.get(gameId);
 
   if (game) {
+    if (!game[indexPlayer].turn) {
+      return;
+    }
+
     let response: string;
     let isShot = false;
 
@@ -221,6 +225,9 @@ export function handleAttack({ x, y, gameId, indexPlayer }: AttackMessageData): 
       }
 
       game.forEach(({ ws }: GameData) => {
+        game[indexPlayer].turn = isShot;
+        game[indexPlayer === 0 ? 1 : 0].turn = !isShot;
+
         ws.send(response);
         sendTurnMessage(gameId, indexPlayer === 0 && !isShot ? 1 : 0);
       });
