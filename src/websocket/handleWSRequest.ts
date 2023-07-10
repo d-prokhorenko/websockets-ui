@@ -1,7 +1,7 @@
 import WebSocket from 'ws';
 import { MessageTypeEnum } from '../enum/message-type.enum.js';
 import { MessageSendType, MessageType, MessageTypeData } from '../types/message-type.type.js';
-import { handleREG } from './message-handlers/reg.js';
+import { handleREG, updateWinners } from './message-handlers/reg.js';
 import { PlayerDataMessage } from '../interfaces/player.interface.js';
 import { getUpdateRoomResponse, handleAddUserToRoom, handleCreateRoom } from './message-handlers/room.js';
 import { AddUserToRoomMessageDataMessage } from '../interfaces/room.interface.js';
@@ -29,6 +29,7 @@ export function handleWSRequest(ws: WebSocket, request: MessageType): void {
       response = handleREG(ws, data as PlayerDataMessage);
       sendResponseMessage(ws, response);
       sendUpdateRoomMessage(ws);
+      updateWinners();
       break;
 
     case MessageTypeEnum.CREATE_ROOM:
@@ -41,17 +42,14 @@ export function handleWSRequest(ws: WebSocket, request: MessageType): void {
 
     case MessageTypeEnum.ADD_SHIPS:
       handleAddShips(data as AddShipMessageData);
-
       break;
 
     case MessageTypeEnum.ATTACK:
       handleAttack(data as AttackMessageData);
-
       break;
 
     case MessageTypeEnum.RANDOM_ATTACK:
       handleRandomAttack(data as RandomAttackMessageData);
-
       break;
 
     default:

@@ -3,11 +3,12 @@ import { Player, PlayerDataMessage } from '../interfaces/player.interface.js';
 import { MessageSendType } from '../types/message-type.type.js';
 import { RoomUser, UpdateRoomStateDataSend } from '../interfaces/room.interface.js';
 import { WebSocket } from 'ws';
-import { GameData } from '../interfaces/ships.interface.js';
+import { GameData, WinnersData } from '../interfaces/ships.interface.js';
 
 export const players = new Map<WebSocket, Player>();
 export const rooms = new Map<number, UpdateRoomStateDataSend>();
 export const games = new Map<number, GameData[]>();
+export const winners = new Map<WebSocket, WinnersData>();
 
 export function registrationPlayer(ws: WebSocket, data: PlayerDataMessage): MessageSendType {
   const response = {

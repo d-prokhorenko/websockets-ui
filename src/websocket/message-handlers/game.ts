@@ -1,8 +1,9 @@
-import { games } from '../../database/database.js';
+import { games, players, winners } from '../../database/database.js';
 import { AttackStatus } from '../../enum/attack-status.enum.js';
 import { MessageTypeEnum } from '../../enum/message-type.enum.js';
 import { AttackMessageData, RandomAttackMessageData } from '../../interfaces/game.interface.js';
 import { AttackPosition, GameData } from '../../interfaces/ships.interface.js';
+import { updateWinners } from './reg.js';
 
 export function sendTurnMessage(gameId: number, playerIndex: number): void {
   const game = games.get(gameId);
@@ -78,7 +79,6 @@ export function handleAttack({ x, y, gameId, indexPlayer }: AttackMessageData): 
             const killedShoots: AttackPosition[] = [];
             let missedShoots: AttackPosition[] = [];
             game[indexPlayer].killedShips += 1;
-            console.log('isKilled', isKilled);
 
             for (let i = 0; i < length; i++) {
               killedShoots.push({
@@ -161,7 +161,7 @@ export function handleAttack({ x, y, gameId, indexPlayer }: AttackMessageData): 
               });
             }
 
-            game.forEach(({ ws }: GameData) => {
+            game.forEach(({ ws }: GameData, index: number) => {
               if (game[indexPlayer].killedShips >= 10) {
                 ws.send(
                   JSON.stringify({
@@ -172,6 +172,16 @@ export function handleAttack({ x, y, gameId, indexPlayer }: AttackMessageData): 
                     id: 0,
                   }),
                 );
+                if (index === indexPlayer && !winners.get(ws)) {
+                  winners.set(ws, {
+                    name: players.get(ws)?.name || '',
+                    wins: 1,
+                  });
+                } else if (index === indexPlayer && winners.get(ws)) {
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  winners.get(ws)!.wins += 1;
+                }
+                updateWinners();
               }
             });
 
@@ -210,7 +220,6 @@ export function handleAttack({ x, y, gameId, indexPlayer }: AttackMessageData): 
 
       game.forEach(({ ws }: GameData) => {
         ws.send(response);
-        console.log(game[indexPlayer].killedShips);
         sendTurnMessage(gameId, indexPlayer === 0 && !isShoot ? 1 : 0);
       });
     }

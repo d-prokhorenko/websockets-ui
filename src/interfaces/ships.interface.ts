@@ -51,3 +51,8 @@ export interface AttackPosition {
   x: number;
   y: number;
 }
+
+export interface WinnersData {
+  name: string;
+  wins: number;
+}
