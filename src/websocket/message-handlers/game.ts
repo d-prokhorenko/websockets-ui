@@ -1,7 +1,7 @@
 import { games } from '../../database/database.js';
 import { AttackStatus } from '../../enum/attack-status.enum.js';
 import { MessageTypeEnum } from '../../enum/message-type.enum.js';
-import { AttackMessageData } from '../../interfaces/game.interface.js';
+import { AttackMessageData, RandomAttackMessageData } from '../../interfaces/game.interface.js';
 import { AttackPosition, GameData } from '../../interfaces/ships.interface.js';
 
 export function sendTurnMessage(gameId: number, playerIndex: number): void {
@@ -23,6 +23,7 @@ export function handleAttack({ x, y, gameId, indexPlayer }: AttackMessageData): 
 
   if (game) {
     let response: string;
+    let isShoot = false;
 
     const enemyShips = game[indexPlayer === 0 ? 1 : 0].ships;
     const attackPositions = game[indexPlayer].attackPositions;
@@ -43,7 +44,9 @@ export function handleAttack({ x, y, gameId, indexPlayer }: AttackMessageData): 
           end: direction ? position.y + length - 1 : position.y,
         };
 
-        if (x >= xPositions.start && x <= xPositions.end && y >= yPositions.start && y <= yPositions.end) {
+        isShoot = x >= xPositions.start && x <= xPositions.end && y >= yPositions.start && y <= yPositions.end;
+
+        if (isShoot) {
           const shipXPositions = direction ? [xPositions.start] : [];
           const shipYPositions = direction ? [] : [yPositions.start];
 
@@ -191,8 +194,18 @@ export function handleAttack({ x, y, gameId, indexPlayer }: AttackMessageData): 
 
       game.forEach(({ ws }: GameData) => {
         ws.send(response);
-        sendTurnMessage(gameId, indexPlayer === 0 ? 1 : 0);
+        sendTurnMessage(gameId, indexPlayer === 0 && !isShoot ? 1 : 0);
       });
     }
+  }
+}
+
+export function handleRandomAttack({ gameId, indexPlayer }: RandomAttackMessageData): void {
+  const game = games.get(gameId);
+  if (game) {
+    const attackPositions = game[indexPlayer].attackPositions;
+    const x = Math.floor(Math.random() * 10);
+    const y = Math.floor(Math.random() * 10);
+    handleAttack({ x, y, gameId, indexPlayer });
   }
 }
