@@ -4,6 +4,20 @@ import { MessageTypeEnum } from '../../enum/message-type.enum.js';
 import { AttackMessageData } from '../../interfaces/game.interface.js';
 import { AttackPosition, GameData } from '../../interfaces/ships.interface.js';
 
+export function sendTurnMessage(gameId: number, playerIndex: number): void {
+  const game = games.get(gameId);
+
+  const response = JSON.stringify({
+    type: MessageTypeEnum.TURN,
+    data: JSON.stringify({ currentPlayer: playerIndex }),
+    id: 0,
+  });
+
+  game?.forEach(({ ws }) => {
+    ws.send(response);
+  });
+}
+
 export function handleAttack({ x, y, gameId, indexPlayer }: AttackMessageData): void {
   const game = games.get(gameId);
 
@@ -57,13 +71,6 @@ export function handleAttack({ x, y, gameId, indexPlayer }: AttackMessageData): 
             shipXPositions.every((xPosition: number) => attackXPositions.includes(xPosition)) &&
             shipYPositions.every((yPosition: number) => attackYPositions.includes(yPosition));
 
-          console.log('attackPositions', attackPositions);
-          console.log('shipXPositions', shipXPositions);
-          console.log('shipYPositions', shipYPositions);
-          console.log('attackXPositions', attackXPositions);
-          console.log('attackYPositions', attackYPositions);
-          console.log('isKilled', isKilled);
-
           if (isKilled) {
             const killedShoots: AttackPosition[] = [];
             let missedShoots: AttackPosition[] = [];
@@ -110,7 +117,6 @@ export function handleAttack({ x, y, gameId, indexPlayer }: AttackMessageData): 
             }
 
             missedShoots = missedShoots.filter(({ x, y }) => x >= 0 && y <= 9 && y >= 0 && x <= 9);
-            console.log('missedShoots', missedShoots);
 
             for (let i = 0; i < killedShoots.length; i++) {
               game.forEach(({ ws }: GameData) => {
@@ -185,6 +191,7 @@ export function handleAttack({ x, y, gameId, indexPlayer }: AttackMessageData): 
 
       game.forEach(({ ws }: GameData) => {
         ws.send(response);
+        sendTurnMessage(gameId, indexPlayer === 0 ? 1 : 0);
       });
     }
   }
