@@ -90,7 +90,7 @@ export function createGame(roomUsers: RoomUser[] | undefined): number {
   // TODO check if game with ID doesn't exist
   const gameId = Math.floor(Math.random() * 1000);
 
-  const gameData = [
+  const gameData: GameData[] = [
     {
       ws: user1?.ws,
       ships: null,

@@ -51,7 +51,7 @@ function createGameForRoomUsers(roomId: number) {
   const idGame = createGame(roomUsers);
 
   roomUsers?.forEach(({ ws }: RoomUser, index: number) => {
-    ws.send(
+    ws?.send(
       JSON.stringify({
         type: MessageTypeEnum.CREATE_GAME,
         data: JSON.stringify({
@@ -62,4 +62,6 @@ function createGameForRoomUsers(roomId: number) {
       }),
     );
   });
+
+  rooms.delete(roomId);
 }
