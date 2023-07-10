@@ -1,16 +1,12 @@
 import { WebSocket } from 'ws';
-import { loginPlayer, players, registrationPlayer, winners } from '../../database/database.js';
+import { registrationPlayer, winners } from '../../database/database.js';
 import { PlayerDataMessage } from '../../interfaces/player.interface.js';
 import { MessageSendType } from '../../types/message-type.type.js';
 import { MessageTypeEnum } from '../../enum/message-type.enum.js';
 import { clients } from '../index.js';
 
 export function handleREG(ws: WebSocket, data: PlayerDataMessage): MessageSendType {
-  if (!players.has(ws)) {
-    return registrationPlayer(ws, data);
-  } else {
-    return loginPlayer(ws, data);
-  }
+  return registrationPlayer(ws, data);
 }
 
 export function updateWinners(): void {

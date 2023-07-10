@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { MessageTypeEnum } from '../enum/message-type.enum.js';
 import { Player, PlayerDataMessage } from '../interfaces/player.interface.js';
 import { MessageSendType } from '../types/message-type.type.js';
@@ -5,7 +6,7 @@ import { RoomUser, UpdateRoomStateDataSend } from '../interfaces/room.interface.
 import { WebSocket } from 'ws';
 import { GameData, WinnersData } from '../interfaces/ships.interface.js';
 
-export const players = new Map<WebSocket, Player>();
+export const players = new Map<string, Player>();
 export const rooms = new Map<number, UpdateRoomStateDataSend>();
 export const games = new Map<number, GameData[]>();
 export const winners = new Map<WebSocket, WinnersData>();
@@ -21,23 +22,21 @@ export function registrationPlayer(ws: WebSocket, data: PlayerDataMessage): Mess
     id: 0,
   };
 
-  if (!players.has(ws)) {
-    players.set(ws, data);
+  const isPlayerExist = [...(players.values() || [])].some(({ name }) => name === data.name);
+
+  if (!isPlayerExist) {
+    players.set(randomUUID(), {
+      ...data,
+      ws,
+    });
 
     return response;
   } else {
-    return {
-      ...response,
-      data: JSON.stringify({
-        name: data.name,
-        error: true,
-        errorText: 'Player already exist',
-      }),
-    };
+    return loginPlayer(data);
   }
 }
 
-export function loginPlayer(ws: WebSocket, data: PlayerDataMessage): MessageSendType {
+export function loginPlayer(data: PlayerDataMessage): MessageSendType {
   const response = {
     type: MessageTypeEnum.REG,
     data: JSON.stringify({
@@ -48,7 +47,9 @@ export function loginPlayer(ws: WebSocket, data: PlayerDataMessage): MessageSend
     id: 0,
   };
 
-  if (players.has(ws)) {
+  const player = [...(players.values() || [])].find(({ name }) => name === data.name);
+
+  if (player?.password === data.password) {
     return response;
   } else {
     return {
@@ -56,7 +57,7 @@ export function loginPlayer(ws: WebSocket, data: PlayerDataMessage): MessageSend
       data: JSON.stringify({
         name: data.name,
         error: true,
-        errorText: "Player doesn't exist",
+        errorText: 'Wrong auth data',
       }),
     };
   }
@@ -64,10 +65,11 @@ export function loginPlayer(ws: WebSocket, data: PlayerDataMessage): MessageSend
 
 export function createRoom(ws: WebSocket): void {
   const roomId = rooms.size;
+  const player = getPlayer(ws);
   const roomUsers = [
     {
       ws,
-      name: players.get(ws)?.name || '',
+      name: player?.name || '',
       index: 0,
     },
   ];
@@ -102,4 +104,8 @@ export function createGame(roomUsers: RoomUser[] | undefined): number {
   games.set(gameId, gameData);
 
   return gameId;
+}
+
+export function getPlayer(ws: WebSocket): Player | undefined {
+  return [...(players.values() || [])].find((player) => player.ws === ws);
 }

@@ -1,4 +1,4 @@
-import { games, players, winners } from '../../database/database.js';
+import { games, getPlayer, players, winners } from '../../database/database.js';
 import { AttackStatus } from '../../enum/attack-status.enum.js';
 import { MessageTypeEnum } from '../../enum/message-type.enum.js';
 import { AttackMessageData, RandomAttackMessageData } from '../../interfaces/game.interface.js';
@@ -173,8 +173,9 @@ export function handleAttack({ x, y, gameId, indexPlayer }: AttackMessageData): 
                   }),
                 );
                 if (index === indexPlayer && !winners.get(ws)) {
+                  const player = getPlayer(ws);
                   winners.set(ws, {
-                    name: players.get(ws)?.name || '',
+                    name: player?.name || '',
                     wins: 1,
                   });
                 } else if (index === indexPlayer && winners.get(ws)) {

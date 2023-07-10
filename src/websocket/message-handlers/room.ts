@@ -1,5 +1,5 @@
 import { WebSocket } from 'ws';
-import { createGame, createRoom, players, rooms } from '../../database/database.js';
+import { createGame, createRoom, getPlayer, players, rooms } from '../../database/database.js';
 import { MessageTypeEnum } from '../../enum/message-type.enum.js';
 import { MessageSendType } from '../../types/message-type.type.js';
 import { AddUserToRoomMessageDataMessage, RoomUser } from '../../interfaces/room.interface.js';
@@ -28,10 +28,11 @@ export function handleAddUserToRoom(ws: WebSocket, data: AddUserToRoomMessageDat
 
 function addUserToRoom(ws: WebSocket, roomId: number): void {
   const room = rooms.get(roomId);
+  const player = getPlayer(ws);
 
   room?.roomUsers?.push({
     ws,
-    name: players.get(ws)?.name || '',
+    name: player?.name || '',
     index: 1,
   });
 }

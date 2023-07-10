@@ -1,8 +1,10 @@
+import { WebSocket } from 'ws';
 import { MessageTypeEnum } from '../enum/message-type.enum.js';
 
 export interface Player {
   name: string;
   password: string;
+  ws: WebSocket;
 }
 export interface PlayerLoginMessage {
   type: MessageTypeEnum.REG;
