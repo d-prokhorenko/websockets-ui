@@ -40,6 +40,10 @@ export function registrationPlayer(ws: WebSocket, data: PlayerDataMessage): Mess
 export function loginPlayer(ws: WebSocket, data: PlayerDataMessage): MessageSendType {
   const player = [...(players.values() || [])].find(({ name }) => name === data.name);
 
+  if (player) {
+    player.ws = ws;
+  }
+
   if (player?.password === data.password) {
     return {
       type: MessageTypeEnum.REG,
@@ -51,10 +55,6 @@ export function loginPlayer(ws: WebSocket, data: PlayerDataMessage): MessageSend
       id: 0,
     };
   } else {
-    if (player) {
-      player.ws = ws;
-    }
-
     return {
       type: MessageTypeEnum.REG,
       data: JSON.stringify({
