@@ -24,20 +24,24 @@ export function handleAttack({ x, y, gameId, indexPlayer }: AttackMessageData): 
   const game = games.get(gameId);
 
   if (game) {
-    if (!game[indexPlayer].turn) {
+    let response: string;
+    let isShot = false;
+    const { attackPositions, turn } = game[indexPlayer];
+    const enemyShips = game[indexPlayer === 0 ? 1 : 0].ships;
+
+    if (!turn) {
       return;
     }
 
-    let response: string;
-    let isShot = false;
+    if (attackPositions.some((attackPosition: AttackPosition) => attackPosition.x === x && attackPosition.y === y)) {
+      sendTurnMessage(gameId, indexPlayer);
+      return;
+    }
 
-    const enemyShips = game[indexPlayer === 0 ? 1 : 0].ships;
-    const attackPositions = game[indexPlayer].attackPositions;
-
-    attackPositions?.push({ x, y });
+    attackPositions.push({ x, y });
 
     if (enemyShips) {
-      for (let i = 0; i < enemyShips?.length; i++) {
+      for (let i = 0; i < enemyShips.length; i++) {
         const { position, direction, length } = enemyShips[i];
 
         const xPositions = {
@@ -128,6 +132,10 @@ export function handleAttack({ x, y, gameId, indexPlayer }: AttackMessageData): 
 
             missedShots = missedShots.filter(({ x, y }) => x >= 0 && y <= 9 && y >= 0 && x <= 9);
 
+            missedShots.forEach(({ x, y }: AttackPosition) => {
+              attackPositions.push({ x, y });
+            });
+
             for (let i = 0; i < killedShots.length; i++) {
               game.forEach(({ ws }: GameData) => {
                 ws.send(
@@ -188,6 +196,8 @@ export function handleAttack({ x, y, gameId, indexPlayer }: AttackMessageData): 
                   winners.get(ws)!.wins += 1;
                 }
                 updateWinners();
+              } else {
+                sendTurnMessage(gameId, indexPlayer === 0 && !isShot ? 1 : 0);
               }
             });
 
